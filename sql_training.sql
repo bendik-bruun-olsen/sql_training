@@ -5,6 +5,12 @@ WHERE patient_id IN (
   	FROM admissions
   	WHERE diagnosis = 'Dementia'
 )
-
 ---
-
+SELECT first_name
+FROM patients
+ORDER BY LEN(first_name), first_name;
+--
+SELECT 
+	(SELECT COUNT(*) FROM patients WHERE gender = 'M') as total_males,
+  	(SELECT COUNT(*) FROM patients WHERE gender = 'F') AS total_females;
+---
