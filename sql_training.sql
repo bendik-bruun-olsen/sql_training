@@ -86,3 +86,17 @@ SELECT
 FROM doctors d
 JOIN admissions a ON doctor_id = attending_doctor_id
 GROUP BY doctor_id;
+---
+SELECT pn.province_name, COUNT(*) as patient_count
+FROM patients p
+JOIN province_names pn ON p.province_id = pn.province_id
+GROUP BY p.province_id
+ORDER BY patient_count DESC
+---
+SELECT 
+	CONCAT(p.first_name, " ", p.last_name) as patient_name,
+    a.diagnosis,
+    CONCAT(d.first_name, " ", d.last_name) as doctor_name
+FROM patients p
+JOIN admissions a ON a.patient_id = p.patient_id
+JOIN doctors d ON doctor_id = a.attending_doctor_id
