@@ -20,3 +20,69 @@ WHERE allergies = 'Penicillin'
 OR allergies = 'Morphine'
 ORDER BY allergies, first_name, last_name;
 ---
+SELECT patient_id, diagnosis
+FROM admissions
+GROUP BY patient_id, diagnosis
+HAVING COUNT(*) > 1;
+---
+SELECT city, COUNT(patient_id) as numPatients
+FROM patients
+GROUP BY city
+ORDER BY numPatients DESC, city
+---
+SELECT first_name, last_name, "Patient" as role from patients
+union ALL
+SELECT first_name, last_name, "Doctor" as role from doctors;
+---
+SELECT allergies, COUNT(*) as total_diagnosis FROM patients
+WHERE allergies IS NOT NULL
+GROUP BY allergies
+ORDER BY total_diagnosis DESC
+--- 
+SELECT first_name, last_name, birth_date
+FROM patients
+WHERE YEAR(birth_date) LIKE '197%'
+ORDER BY birth_date;
+--- 
+SELECT CONCAT(UPPER(last_name), ",", LOWER(first_name)) as new_name_format FROM patients
+ORDER BY first_name DESC;
+---
+SELECT province_id, CEIL(SUM(height)) as sum_height
+FROM patients
+GROUP BY province_id
+HAVING sum_height >= 7000
+---
+SELECT MAX(weight) - MIN(weight)
+FROM patients
+WHERE last_name = 'Maroni';
+---
+SELECT DAY(admission_date) as day_number, COUNT(admission_date) as number_of_admissions
+FROM admissions
+GROUP BY day_number
+ORDER BY number_of_admissions DESC
+---
+SELECT * FROM admissions
+WHERE patient_id = 542
+GROUP BY patient_id
+HAVING admission_date = MAX(admission_date);
+---
+SELECT patient_id, attending_doctor_id, diagnosis
+FROM admissions
+WHERE 
+	(patient_id % 2 != 0 AND attending_doctor_id IN (1, 5, 19))
+OR 
+	(attending_doctor_id LIKE '%2%' AND LEN(patient_id) = 3)
+---
+select d.first_name, d.last_name, COUNT(a.attending_doctor_id) AS admissions_total
+FROM doctors d
+LEFT JOIN admissions a ON doctor_id = attending_doctor_id
+GROUP BY attending_doctor_id;
+---
+SELECT 
+	d.doctor_id, 
+    CONCAT(d.first_name, " ", d.last_name) as full_name, 
+    MIN(a.admission_date) as first_admission_date,
+    MAX(a.admission_date) AS last_admission_date
+FROM doctors d
+JOIN admissions a ON doctor_id = attending_doctor_id
+GROUP BY doctor_id;
