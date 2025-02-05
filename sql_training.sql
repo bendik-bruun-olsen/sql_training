@@ -100,3 +100,78 @@ SELECT
 FROM patients p
 JOIN admissions a ON a.patient_id = p.patient_id
 JOIN doctors d ON doctor_id = a.attending_doctor_id
+---
+SELECT first_name, last_name, COUNT(*) as num_of_duplicates
+FROM patients
+group by first_name, last_name
+HAVING COUNT(*) > 1
+---
+SELECT 
+	CONCAT(first_name, " ", last_name) as patient_name,
+    round(height / 30.48, 1) as 'height "Feet"',
+    ROUND(weight * 2.205, 0) as 'weight "Pounds"',
+    birth_date,
+    CASE
+		WHEN gender = "M" THEN "MALE"
+		ELSE "FEMALE" 
+	END as gender_type
+FROM patients
+---
+SELECT patient_id, first_name, last_name
+FROM patients
+WHERE patient_id NOT in (SELECT patient_id FROM admissions)
+---
+SELECT
+	MAX(daily_visits) as max_visits,
+    MIN(daily_visits) as min_visits,
+    ROUND(AVG(daily_visits), 2)
+FROM
+	(SELECT COUNT(admission_date) AS daily_visits
+    FROM admissions
+    GROUP BY admission_date)
+---
+---HARD QUESTIONS---
+---
+SELECT COUNT(*) as patients_in_group, (weight / 10) * 10 as weight_group
+FROM patients
+GROUP BY weight_group
+order by weight DESC;
+---
+SELECT 
+	patient_id, 
+    weight, 
+    height,
+    CASE
+    	WHEN (weight / POWER((height / 100.0), 2)) >= 30 THEN 1
+        ELSE 0
+    END AS isObese
+from patients;
+---
+SELECT
+	p.patient_id,
+    p.first_name as patient_first_name,
+    p.last_name AS patient_last_name,
+    d.specialty as attending_doctor_speciality
+FROM patients p
+JOIN admissions a on a.patient_id = p.patient_id
+JOIN doctors d ON d.doctor_id = a.attending_doctor_id
+WHERE a.diagnosis = 'Epilepsy'
+AND d.first_name = 'Lisa'
+---
+SELECT 
+	p.patient_id,
+    CONCAT(p.patient_id, LEN(p.last_name), YEAR(p.birth_date)) as temp_password
+FROM patients p
+WHERE p.patient_id IN (SELECT patient_id FROM admissions WHERE discharge_date IS NOT NULL)
+---
+SELECT
+	CASE
+    	WHEN patient_id % 2 = 0 THEN 'Yes'
+        ELSE 'No'
+    END as has_insurance,
+    SUM(CASE
+    	WHEN patient_id % 2 = 0 THEN 10
+        ELSE 50
+    END) as cost_after_insurance
+from admissions
+GROUP BY has_insurance
