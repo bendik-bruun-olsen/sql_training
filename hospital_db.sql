@@ -1,3 +1,4 @@
+--- HOSPITAL DB ---
 SELECT patient_id, first_name, last_name
 FROM patients
 WHERE patient_id IN (
@@ -198,3 +199,22 @@ from patients
 SELECT admission_date, COUNT(*) as admissions_day, COUNT(*) - LAG(COUNT(*), 1) OVER(ORDER BY admission_date) as admission_count_change
 FROM admissions
 GROUP BY admission_date
+---
+SELECT province_name
+FROM province_names
+ORDER BY 
+	CASE 
+    	WHEN province_name = 'Ontario' THEN 0
+        ELSE 1
+    END,
+    province_name;
+---
+SELECT
+	d.doctor_id,
+    CONCAT(d.first_name, ' ', d.last_name) as doctor_name,
+    d.specialty,
+    YEAR(a.admission_date) as selected_year,
+    COUNT(a.admission_date) as total_admissions
+FROM doctors AS d
+LEFT JOIN admissions AS a ON a.attending_doctor_id = doctor_id
+GROUP BY d.doctor_id, selected_year
