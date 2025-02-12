@@ -175,3 +175,26 @@ SELECT
     END) as cost_after_insurance
 from admissions
 GROUP BY has_insurance
+---
+SELECT pn.province_name
+FROM province_names pn
+join patients p ON p.province_id = pn.province_id  
+group by pn.province_name
+HAVING COUNT(CASE WHEN p.gender = 'M' THEN 1 END) > COUNT(CASE WHEN p.gender = 'F' THEN 1 END)
+---
+SELECT *
+FROM patients
+WHERE first_name LIKE '__r%'
+AND gender = 'F'
+AND MONTH(birth_date) IN (2, 5, 12)
+AND weight BETWEEN 60 and 80
+AND patient_id % 2 != 0
+AND city = 'Kingston'
+---
+SELECT
+	CONCAT(ROUND(COUNT(CASE WHEN gender = 'M' THEN 1 END) * 100.0 / COUNT(*), 2), '%') as percent_of_male_patients
+from patients
+---
+SELECT admission_date, COUNT(*) as admissions_day, COUNT(*) - LAG(COUNT(*), 1) OVER(ORDER BY admission_date) as admission_count_change
+FROM admissions
+GROUP BY admission_date
